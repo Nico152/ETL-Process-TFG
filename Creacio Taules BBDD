@@ -1,0 +1,136 @@
+
+CREATE TYPE Tipus AS ENUM ('Baptisme','Matrimoni','Obituari');
+CREATE TYPE Tipus_sexe AS ENUM ('M','F','A');
+CREATE TYPE Tipus_Participant AS ENUM ('Oficiant', 'Pare', 'Mare', 'Conjuge Padrina', 'Avia Materna', 'Avi Matern', 'Avia Paterna',
+                                      'Avi Patern', 'Padri', 'Padrina','Pare Marit','Mare Marit','Pare Muller','Mare Muller',
+                                       'Testimoni 1','Testimoni 2','Testimoni 3', 'Conjuge Difunt','Pare Difunt', 'Mare Difunt');
+CREATE TYPE Tipus_Estat_vital AS ENUM ('viu/va','difunt/a');
+
+CREATE TABLE persona_buidatrev(
+    codi_nom char(4),
+    PRIMARY KEY (codi_nom));
+
+CREATE TABLE persona(
+	nom character(50),
+	cognom1 character(50),
+    cognom2 character(50),
+    sexe Tipus_sexe,
+    estat_vital tipus_estat_vital,
+    ofici_carrec character(300),
+    alies character(50),
+    estat_civil character(50),
+    data_naixement char(12),
+    lloc_naixement character(100),
+    residencia character(100));
+
+CREATE TABLE parroquia(
+	nom_Parroquia character (40),
+    PRIMARY KEY (nom_Parroquia));
+
+
+CREATE TABLE arxiu(
+    nom_llibre character(20),
+    nom_Parroquia character(40),
+    p_buidat character(4),
+    p_revisat character(4),
+    PRIMARY KEY (nom_llibre),
+    FOREIGN KEY (nom_Parroquia) REFERENCES parroquia(nom_Parroquia),
+    FOREIGN KEY (p_buidat) REFERENCES persona_buidatrev(codi_nom),
+	FOREIGN KEY (p_revisat) REFERENCES persona_buidatrev(codi_nom));
+
+CREATE TABLE registre(
+    nom_llibre character(20),
+    num_registre integer,
+    pag_llibre character(20),
+    pag_pdf integer,
+    PRIMARY KEY (nom_llibre,num_registre),
+    FOREIGN KEY (nom_llibre) REFERENCES arxiu(nom_llibre));
+
+CREATE TABLE event_taula(
+    nom_llibre character(20),
+    num_registre integer,
+    data_inscripcio char(12),
+    data_event char(12),
+    lloc_event character(175),
+    tipus_event Tipus,
+    ObservacioGeneral char(500),
+    PRIMARY KEY (nom_llibre, num_registre),
+    FOREIGN KEY (nom_llibre, num_registre) REFERENCES registre(nom_llibre,num_registre));
+
+CREATE TABLE baptisme(
+    nom_llibre char(20),
+    num_registre int,
+    nom char(50),
+    noms_complementaris character(70),
+    cognom1 char(50),
+    cognom2 char(50),
+    sexe tipus_sexe,
+    data_naixement char(12),
+    lloc_naixement character(100),
+    observacio char(500),
+    PRIMARY KEY (nom_llibre,num_registre),
+    FOREIGN KEY (nom_llibre, num_registre) REFERENCES event_taula(nom_llibre,num_registre));
+    
+CREATE TABLE matrimoni(
+    nom_llibre char(20),
+    num_registre int,
+    nom_Marit char(50),
+    Cognom1_Marit char(50),
+    Cognom2_Marit char(50),
+    edat_Marit char(50),
+    lloc_naixement_Marit character(100),
+    estat_civil_Marit character(50),
+    residencia_Marit character(100),
+    ocupacio_Marit character(300),
+    nom_Muller char(50),
+    cognom1_Muller char(50),
+    cognom2_Muller char(50),
+    alies_Muller char(20),
+    lloc_naixement_Muller character(100),
+    residencia_Muller character(100),
+    edat_Muller char(50),
+    estat_civil_Muller char(50),
+    esglesia character(100),
+    capitols_Mat char(100),
+    PRIMARY KEY (nom_llibre,num_registre),
+    FOREIGN KEY (nom_llibre, num_registre) REFERENCES event_taula(nom_llibre,num_registre));
+    
+    
+CREATE TABLE obituari(
+    nom_llibre char(20),
+    num_registre int,
+    nom char(50),
+    cognom1 char(50),
+    cognom2 char(50),
+    alies char(50),
+    sexe tipus_sexe,
+    data_naixement char(12),
+    lloc_naixement character(122),
+    edat char(50),
+    estat_civil character(20),
+    residencia character(101),
+    ocupacio character(300),
+    data_enterrament character(12),
+    lloc_enterrament character(500),
+    cementiri char(120),
+    noms_fills char(121),
+    Obs_Obi char(500),
+    PRIMARY KEY (nom_llibre,num_registre),
+    FOREIGN KEY (nom_llibre, num_registre) REFERENCES event_taula(nom_llibre,num_registre));
+    
+CREATE TABLE participant(
+    nom_llibre char(20),
+    num_registre int,
+    tipus_event Tipus,
+    tipus_part tipus_participant,
+    nom char(50),
+    cognom1 char(50),
+    cognom2 char(50),
+    estat_vital tipus_estat_vital,
+    ofici_carrec char(300),
+    lloc_naixement char(100),
+    residencia char(100),
+    observacio char(500),
+    PRIMARY KEY (nom_llibre,num_registre,tipus_part),
+    FOREIGN KEY (nom_llibre, num_registre) REFERENCES event_taula(nom_llibre,num_registre));
+
